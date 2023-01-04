@@ -1,1 +1,5 @@
 programme/bin
+redaction/*.aux
+redaction/*.log
+redaction/*.gz
+redaction/*.toc
