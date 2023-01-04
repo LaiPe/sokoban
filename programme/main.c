@@ -10,13 +10,15 @@ char terrain[LIGNS][COLS] = {
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', 'x', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', '0', ' ', ' ', ' ', '#',
+    '#', ' ', ' ', ' ', 'x', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', ' ', '0', 'O', '0', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', 'P', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'
 };
+
+int nbCibles=3;
 
 //Variables de position du personage
 int persoLign= 5;
@@ -26,6 +28,8 @@ short int persoSurCible = 0;
 //Variables de déplacement du personage
 int x;
 int y;
+
+int puntos=2;
 
 int obstacle(char a){
     return a=='#' || a=='0' || a=='O';
@@ -41,14 +45,18 @@ void printTerrain() {
 }
 
 int main() {
-    printTerrain();
-
     char input[10];
-    while (1) {
+    while (puntos<nbCibles) {
+        //Affichage Interface
+        system("clear");
+        printTerrain();
+        printf("puntos:%d\n",puntos);
+
+        //Entrée utilisateur
         printf("Déplacement ? (g/h/d/b): ");
         scanf("%s", input);
 
-        //Valeurs en fonction du déplacement idiqué par l'utilisateur
+        //Valeurs en fonction du déplacement indiqué par l'utilisateur
         if (strcmp(input, "h") == 0) {y=-1;x=0;}
         else if (strcmp(input, "b") == 0) {y=1;x=0;} 
         else if (strcmp(input, "g") == 0) {y=0;x=-1;} 
@@ -77,7 +85,8 @@ int main() {
                 persoLign += y;
                 persoCol += x;
                 terrain[persoLign][persoCol] = 'P';
-                terrain[persoLign + y][persoCol + x] = '0'; 
+                terrain[persoLign + y][persoCol + x] = '0';
+                puntos++;
             }
             else{
                 terrain[persoLign][persoCol] = ' ';
@@ -116,6 +125,7 @@ int main() {
                 persoCol += x;
                 terrain[persoLign][persoCol] = 'P';
                 terrain[persoLign + y][persoCol + x] = 'O';
+                puntos--;
 
                 //De plus: si le perso se trouve sur une cible
                 if (persoSurCible){
@@ -138,6 +148,10 @@ int main() {
             }
             persoSurCible++;
         }
-        printTerrain();
     }
+    //Affichage de fin
+    system("clear");
+    printTerrain();
+    printf("puntos:%d\n",puntos);
+    printf("Incroyable, tu as gagné !\n");
 }
