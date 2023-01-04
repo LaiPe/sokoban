@@ -3,3 +3,8 @@ redaction/*.aux
 redaction/*.log
 redaction/*.gz
 redaction/*.toc
+
+[comment]: <> (for replit)
+.ccls-cache
+.replit
+replit.nix
