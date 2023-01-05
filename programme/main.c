@@ -241,7 +241,7 @@ int partieSokoban(partie *game){
         system("clear");
         texte_encadre(game->nom,80);
         printTerrain(game->carte);
-        
+
         if(game->puntos < game->nbCibles){
             //Entrée utilisateur
             printf("Entrez 'a' pour abandonner.\n");
@@ -269,7 +269,8 @@ int partieSokoban(partie *game){
         printf("Malheureusement, tu as perdu !\n");
     }
     printf("Appuie sur N'IMPORTE quelle touche puis ENTRER pour retourner au menu\n");
-    scanf(" ");
+    char random[10];
+    scanf("%s", random);
 }
 
 int main() {
