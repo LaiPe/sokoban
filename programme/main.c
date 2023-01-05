@@ -2,42 +2,81 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define LIGNS 10
-#define COLS 10
 
-char terrain[LIGNS][COLS] = {
-    '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
-    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', 'x', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', '0', 'O', '0', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', 'P', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'
+//STRUCTURE DE DONNEES
+//Variables de position du personage
+typedef struct perso perso;
+struct perso{
+int lign;
+int col;
+short int surCible;
 };
 
-int nbCibles=3;
+//Variables du terrain
+typedef struct terrain terrain;
+struct terrain{
+    char ** data;
+    int nbLigns;
+    int nbCols;
+};
 
-//Variables de position du personage
-int persoLign= 5;
-int persoCol= 5;
-short int persoSurCible = 0;
+//Variables de la partie
+typedef struct partie partie;
+struct partie{
+    terrain *carte;
+    perso *perso;
+    int nbCibles;
+    int puntos;
+};
 
-//Variables de déplacement du personage
-int x;
-int y;
+//FONCTIONS
+void declaTerrain(terrain *t){
+    t->data=malloc(t->nbLigns*sizeof(char*));
 
-int puntos=2;
+    //Si erreur allocation
+    if (t->data==NULL){
+        printf("Erreur: problème lors de l'allocation principale");
+        return;
+    }
+    for (int i=0;i<t->nbLigns;i++){
+        t->data[i]=malloc(t->nbCols*sizeof(char));
+
+        //Si erreur allocation
+        if (t->data[i]==NULL){
+            printf("Erreur: problème lors de la %d-ème allocation secondaire",i);
+            for (int j=0;j<i;j++){
+                free(t->data[j]);
+            }
+            free(t->data[i]);
+            return;
+        }
+    }
+}
+void initTerrainTest(terrain *t){
+    for (int i=0;i<t->nbLigns;i++){
+        for (int j=0;j<t->nbCols;j++){
+            if (i==0 || i==t->nbLigns-1 || j==0 || j==t->nbCols-1){
+                t->data[i][j]='#';
+            }
+            else{
+                t->data[i][j]=' ';
+            }
+        }
+    }
+    t->data[1][1]='P';
+    t->data[2][3]='O';
+    t->data[3][5]='x';
+}
+
 
 int obstacle(char a){
     return a=='#' || a=='0' || a=='O';
 }
 
-void printTerrain() {
-    for (int lign = 0; lign < LIGNS; lign++) {
-        for (int col = 0; col < COLS; col++) {
-            printf("%c", terrain[lign][col]);
+void printTerrain(terrain *t){
+    for (int i=0;i<t->nbLigns;i++){
+        for (int j=0;j<t->nbCols;j++){
+            printf("%c",t->data[i][j]);
         }
         printf("\n");
     }
@@ -77,7 +116,7 @@ void printMenu(){
     printf("\n");
     printf("\n");
     texte_encadre("MENU",80);
-    printf("\t1. Jouer à la partie codée en dur\n");
+    printf("\t1. Jouer à la partie de test\n");
     printf("\t2. Jouer au mode histoire\n");
     printf("\t3. Jouer à une partie enregistée dans un fichier .csv\n");
     printf("\tq. Quitter\n");
@@ -87,128 +126,157 @@ void printMenu(){
     printf("\n");
 }
 
+int partieSokoban(partie *game){
+    //Variables de déplacement du personage
+    int x;
+    int y;
+    char input[10];
+
+    while (game->puntos<game->nbCibles) {
+        //Affichage Interface
+        system("clear");
+        printTerrain(game->carte);
+        printf("puntos:%d\n",game->puntos);
+
+        //Entrée utilisateur
+        printf("Déplacement ? (g/h/d/b): ");
+        scanf("%s", input);
+        
+
+        //Valeurs en fonction du déplacement indiqué par l'utilisateur
+        if (strcmp(input, "h") == 0) {y=-1;x=0;}
+        else if (strcmp(input, "b") == 0) {y=1;x=0;} 
+        else if (strcmp(input, "g") == 0) {y=0;x=-1;} 
+        else if (strcmp(input, "d") == 0) {y=0;x=1;}
+        else {y=0;x=0;}
+
+        // Regles déplacement
+        if (game->carte->data[game->perso->lign + y][game->perso->col + x] == ' ') {
+            // Vers une case vide
+            game->carte->data[game->perso->lign][game->perso->col] = ' ';
+            game->perso->lign += y;
+            game->perso->col += x;
+            game->carte->data[game->perso->lign][game->perso->col] = 'P';
+
+            //De plus: si le perso se trouve sur une cible
+            if (game->perso->surCible){
+                game->carte->data[game->perso->lign - y][game->perso->col - x] = 'x';
+                game->perso->surCible--;
+            }
+        }
+        else if (game->carte->data[game->perso->lign + y][game->perso->col + x] == 'O' && !(obstacle(game->carte->data[game->perso->lign + 2*y][game->perso->col + 2*x]))){
+            // Vers une caisse à pousser sans obstacle derrière
+            if (game->carte->data[game->perso->lign + 2*y][game->perso->col + 2*x] == 'x'){
+                // S'il y a une cible derrière la caisse
+                game->carte->data[game->perso->lign][game->perso->col] = ' ';
+                game->perso->lign += y;
+                game->perso->col += x;
+                game->carte->data[game->perso->lign][game->perso->col] = 'P';
+                game->carte->data[game->perso->lign + y][game->perso->col + x] = '0';
+                game->puntos++;
+            }
+            else{
+                game->carte->data[game->perso->lign][game->perso->col] = ' ';
+                game->perso->lign += y;
+                game->perso->col += x;
+                game->carte->data[game->perso->lign][game->perso->col] = 'P';
+                game->carte->data[game->perso->lign + y][game->perso->col + x] = 'O';
+            }
+
+            //De plus: si le perso se trouve sur une cible
+            if (game->perso->surCible){
+                game->carte->data[game->perso->lign - y][game->perso->col - x] = 'x';
+                game->perso->surCible--;
+            }
+        }
+        else if (game->carte->data[game->perso->lign + y][game->perso->col + x] == '0' && !(obstacle(game->carte->data[game->perso->lign + 2*y][game->perso->col + 2*x]))){
+            // Vers une caisse sur une cible (sans obstacle derrière)
+            if (game->carte->data[game->perso->lign + 2*y][game->perso->col + 2*x] == 'x'){
+                // S'il y a une cible derrière la caisse
+                game->carte->data[game->perso->lign][game->perso->col] = ' ';
+                game->perso->lign += y;
+                game->perso->col += x;
+                game->carte->data[game->perso->lign][game->perso->col] = 'P';
+                game->carte->data[game->perso->lign + y][game->perso->col + x] = '0';
+
+                //De plus: si le perso se trouve sur une cible
+                if (game->perso->surCible){
+                    game->carte->data[game->perso->lign - y][game->perso->col - x] = 'x';
+                    game->perso->surCible--;
+                }
+                game->perso->surCible++;
+            }
+            else{
+                game->carte->data[game->perso->lign][game->perso->col] = ' ';
+                game->perso->lign += y;
+                game->perso->col += x;
+                game->carte->data[game->perso->lign][game->perso->col] = 'P';
+                game->carte->data[game->perso->lign + y][game->perso->col + x] = 'O';
+                game->puntos--;
+
+                //De plus: si le perso se trouve sur une cible
+                if (game->perso->surCible){
+                    game->carte->data[game->perso->lign - y][game->perso->col - x] = 'x';
+                    game->perso->surCible--;
+                }
+                game->perso->surCible++;
+            }
+        }
+        else if (game->carte->data[game->perso->lign + y][game->perso->col + x] == 'x') {
+            // Vers une cible
+            game->carte->data[game->perso->lign][game->perso->col] = ' ';
+            game->perso->lign += y;
+            game->perso->col += x;
+            game->carte->data[game->perso->lign][game->perso->col] = 'P';
+            //De plus: si le perso se trouve sur une cible
+            if (game->perso->surCible){
+                game->carte->data[game->perso->lign - y][game->perso->col - x] = 'x';
+                game->perso->surCible--;
+            }
+            game->perso->surCible++;
+        }
+    }
+    //Affichage de fin
+    system("clear");
+    printTerrain(game->carte);
+    printf("puntos:%d\n",game->puntos);
+    printf("Incroyable, tu as gagné !\n");
+    printf("Appuie sur N'IMPORTE quelle touche puis ENTRER pour retourner au menu\n");
+    scanf(" ");
+}
+
 int main() {
     int conti=1;
     while(conti){
+
         fflush(stdout);
         printMenu();
         char choix[10];
         printf("Choix?(1,2,3 ou q): ");
         scanf("%s", choix);
+
         if (strcmp(choix, "1") == 0){
-            char input[10];
-            while (puntos<nbCibles) {
-                //Affichage Interface
-                system("clear");
-                printTerrain();
-                printf("puntos:%d\n",puntos);
+            //Initialisation de Bob
+            perso * bob=malloc(sizeof(bob));
+            bob->lign=1;
+            bob->col=1;
+            bob->surCible=0;
 
-                //Entrée utilisateur
-                printf("Déplacement ? (g/h/d/b): ");
-                scanf("%s", input);
-                
+            //Initialisation du terrain
+            terrain *t=malloc(sizeof(terrain));
+            t->nbLigns=10;
+            t->nbCols=10;
+            declaTerrain(t);
+            initTerrainTest(t);
+            
+            //Initialisation de la partie
+            partie *partieTest=malloc(sizeof(partie));
+            partieTest->perso = bob;
+            partieTest->carte = t;
+            partieTest->nbCibles = 1;
+            partieTest->puntos = 0;
 
-                //Valeurs en fonction du déplacement indiqué par l'utilisateur
-                if (strcmp(input, "h") == 0) {y=-1;x=0;}
-                else if (strcmp(input, "b") == 0) {y=1;x=0;} 
-                else if (strcmp(input, "g") == 0) {y=0;x=-1;} 
-                else if (strcmp(input, "d") == 0) {y=0;x=1;}
-                else {y=0;x=0;}
-
-                // Regles déplacement
-                if (terrain[persoLign + y][persoCol + x] == ' ') {
-                    // Vers une case vide
-                    terrain[persoLign][persoCol] = ' ';
-                    persoLign += y;
-                    persoCol += x;
-                    terrain[persoLign][persoCol] = 'P';
-
-                    //De plus: si le perso se trouve sur une cible
-                    if (persoSurCible){
-                        terrain[persoLign - y][persoCol - x] = 'x';
-                        persoSurCible--;
-                    }
-                }
-                else if (terrain[persoLign + y][persoCol + x] == 'O' && !(obstacle(terrain[persoLign + 2*y][persoCol + 2*x]))){
-                    // Vers une caisse à pousser sans obstacle derrière
-                    if (terrain[persoLign + 2*y][persoCol + 2*x] == 'x'){
-                        // S'il y a une cible derrière la caisse
-                        terrain[persoLign][persoCol] = ' ';
-                        persoLign += y;
-                        persoCol += x;
-                        terrain[persoLign][persoCol] = 'P';
-                        terrain[persoLign + y][persoCol + x] = '0';
-                        puntos++;
-                    }
-                    else{
-                        terrain[persoLign][persoCol] = ' ';
-                        persoLign += y;
-                        persoCol += x;
-                        terrain[persoLign][persoCol] = 'P';
-                        terrain[persoLign + y][persoCol + x] = 'O';
-                    }
-
-                    //De plus: si le perso se trouve sur une cible
-                    if (persoSurCible){
-                        terrain[persoLign - y][persoCol - x] = 'x';
-                        persoSurCible--;
-                    }
-                }
-                else if (terrain[persoLign + y][persoCol + x] == '0' && !(obstacle(terrain[persoLign + 2*y][persoCol + 2*x]))){
-                    // Vers une caisse sur une cible (sans obstacle derrière)
-                    if (terrain[persoLign + 2*y][persoCol + 2*x] == 'x'){
-                        // S'il y a une cible derrière la caisse
-                        terrain[persoLign][persoCol] = ' ';
-                        persoLign += y;
-                        persoCol += x;
-                        terrain[persoLign][persoCol] = 'P';
-                        terrain[persoLign + y][persoCol + x] = '0';
-
-                        //De plus: si le perso se trouve sur une cible
-                        if (persoSurCible){
-                            terrain[persoLign - y][persoCol - x] = 'x';
-                            persoSurCible--;
-                        }
-                        persoSurCible++;
-                    }
-                    else{
-                        terrain[persoLign][persoCol] = ' ';
-                        persoLign += y;
-                        persoCol += x;
-                        terrain[persoLign][persoCol] = 'P';
-                        terrain[persoLign + y][persoCol + x] = 'O';
-                        puntos--;
-
-                        //De plus: si le perso se trouve sur une cible
-                        if (persoSurCible){
-                            terrain[persoLign - y][persoCol - x] = 'x';
-                            persoSurCible--;
-                        }
-                        persoSurCible++;
-                    }
-                }
-                else if (terrain[persoLign + y][persoCol + x] == 'x') {
-                    // Vers une cible
-                    terrain[persoLign][persoCol] = ' ';
-                    persoLign += y;
-                    persoCol += x;
-                    terrain[persoLign][persoCol] = 'P';
-                    //De plus: si le perso se trouve sur une cible
-                    if (persoSurCible){
-                        terrain[persoLign - y][persoCol - x] = 'x';
-                        persoSurCible--;
-                    }
-                    persoSurCible++;
-                }
-            }
-            //Affichage de fin
-            int random;
-            system("clear");
-            printTerrain();
-            printf("puntos:%d\n",puntos);
-            printf("Incroyable, tu as gagné !\n");
-            printf("Appuie sur N'IMPORTE quelle touche puis ENTRER pour retourner au menu\n");
-            scanf(" ");
+            partieSokoban(partieTest);
         }
         else if (strcmp(choix, "q") == 0){
             conti=0;
