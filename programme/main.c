@@ -27,6 +27,7 @@ struct partie{
     perso *perso;
     int nbCibles;
     int puntos;
+    char *nom;
 };
 
 //FONCTIONS
@@ -132,17 +133,18 @@ int partieSokoban(partie *game){
     int y;
     char input[10];
 
-    while (game->puntos<game->nbCibles) {
-        //Affichage Interface
-        system("clear");
-        printTerrain(game->carte);
-        printf("puntos:%d\n",game->puntos);
+    //Affichage Interface
+    system("clear");
+    texte_encadre(game->nom,80);
+    printTerrain(game->carte);
 
-        //Entrée utilisateur
-        printf("Déplacement ? (g/h/d/b): ");
-        scanf("%s", input);
+    //Entrée utilisateur
+    printf("Entrez 'a' pour abandonner.\n");
+    printf("Déplacement ? (g/h/d/b): ");
+    scanf("%s", input);
+
+    while (strcmp(input, "a") != 0 && game->puntos<game->nbCibles) {
         
-
         //Valeurs en fonction du déplacement indiqué par l'utilisateur
         if (strcmp(input, "h") == 0) {y=-1;x=0;}
         else if (strcmp(input, "b") == 0) {y=1;x=0;} 
@@ -235,12 +237,37 @@ int partieSokoban(partie *game){
             }
             game->perso->surCible++;
         }
+        //Affichage Interface
+        system("clear");
+        texte_encadre(game->nom,80);
+        printTerrain(game->carte);
+        
+        if(game->puntos < game->nbCibles){
+            //Entrée utilisateur
+            printf("Entrez 'a' pour abandonner.\n");
+            printf("Déplacement ? (g/h/d/b): ");
+            scanf("%s", input);
+        }
     }
     //Affichage de fin
-    system("clear");
-    printTerrain(game->carte);
-    printf("puntos:%d\n",game->puntos);
-    printf("Incroyable, tu as gagné !\n");
+    if (game->puntos==game->nbCibles){
+        afficher_ascii_art("./programme/ressources/victoire.txt");
+    }
+    else{
+        afficher_ascii_art("./programme/ressources/defaite.txt");
+    }
+    printf("\n");
+    printf("\n");
+    for (int i=0;i<80;i++){
+        printf("=");
+    }
+    printf("\n");
+    if (game->puntos==game->nbCibles){
+        printf("Incroyable, tu as gagné !\n");
+    }
+    else{
+        printf("Malheureusement, tu as perdu !\n");
+    }
     printf("Appuie sur N'IMPORTE quelle touche puis ENTRER pour retourner au menu\n");
     scanf(" ");
 }
@@ -275,6 +302,7 @@ int main() {
             partieTest->carte = t;
             partieTest->nbCibles = 1;
             partieTest->puntos = 0;
+            partieTest->nom = "PARTIE TEST";
 
             partieSokoban(partieTest);
         }
