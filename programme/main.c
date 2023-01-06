@@ -60,14 +60,14 @@ int main() {
             terrain *t=malloc(sizeof(terrain));
             t->nbLigns=10;
             t->nbCols=10;
+            t->nbCibles = 1;
             declaTerrain(t);
             initTerrainTest(t);
             
             //Initialisation de la partie
             partie *partieTest=malloc(sizeof(partie));
             partieTest->perso = bob;
-            partieTest->carte = t;
-            partieTest->nbCibles = 1;
+            partieTest->terrain = t;
             partieTest->puntos = 0;
             partieTest->nom = "PARTIE TEST";
 

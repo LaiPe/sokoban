@@ -13,14 +13,14 @@ struct terrain{
     char ** data;
     int nbLigns;
     int nbCols;
+    int nbCibles;
 };
 
 //Variables de la partie
 typedef struct partie partie;
 struct partie{
-    terrain *carte;
+    terrain *terrain;
     perso *perso;
-    int nbCibles;
     int puntos;
     char *nom;
 };
