@@ -184,49 +184,57 @@ stdio.h, stdlib.h et string.h sont des librairies de fonctions standards du lang
 \newpage
 \subsection{Fonctions d'affichage}
 \subsubsection{fonction afficher\_ascii\_art()}
-Cette fonction va prendre en argument un pointeur sur une chaine de caractère constante. Elle aura pour effet de bord d'afficher le contenu du fichier qu'on lui passe en argument.
+Cette fonction va prendre en argument un pointeur sur une chaine de caractère constante. Elle aura pour effet de bord d'afficher le contenu du fichier qu'on lui passe en argument. Si le fichier ne s'ouvre pas correctement, la fonction nous l'affiche dans le terminal.
 \begin{lstlisting}
 void afficher_ascii_art(const char *nom_fichier) {
     FILE *fp;
     int c;
+    //Ouverture du fichier
     fp = fopen(nom_fichier, "r");
     if (fp == NULL) {
         perror("Erreur lors de l'ouverture du fichier");
         return;
     }
+    //Lecture et affichage de chaque caractère 
     while ((c = fgetc(fp)) != EOF) {
         putchar(c);
     }
     fclose(fp);
 }
 \end{lstlisting}
-\textit{Tout d'abord elle va initialiser une variable “fp” qui va être de type FILE * et un entier “c”. Ensuite elle va ouvrir le fichier qu’on lui a mis en argument en lecture et assigner ce fichier a fp. Si l'ouverture du fichier ne s’exécute pas correctement, fp sera égal à “NULL” et la fonction affichera alors “Erreur lors de l'ouverture du fichier”. Si le fichier s'ouvre correctement, la boucle while va affecter un à un chaque caractère du fichier à “c” et va l'afficher tant que “c” est différent de EOF c’est a dire “END OF FILE” qui est la fin du fichier. Enfin, la dernière ligne de cette fonction va refermer le fichier ouvert.}
 \subsubsection{fonction texte\_encadre()}
 Cette fonction va prendre en argument un pointeur sur une chaine de caractère constante et un entier. Elle aura pour effet de bord d'afficher une ligne de “=” avec au milieu de cette ligne le mot mis en argument.
 \begin{lstlisting}
 void texte_encadre(const char * mot, int bande){
-    bande=(bande-strlen(mot)-2)/2;
+  //Affiche une demi-bande de =
+  bande=(bande-strlen(mot)-2)/2;
     for (int i=0;i<bande;i++){
         printf("=");
     }
+    //Affichage du mot entre deux espace
     printf(" ");
     printf("%s",mot);
     printf(" ");
+  
+    //Affichage de la seconde demi-bande
     for (int i=0;i<bande;i++){
         printf("=");
     }
     printf("\n");
 }
 \end{lstlisting}
-\textit{La première ligne va modifier la valeur de la variable bande, elle va tout d'abord enlever la longueur du mot moins 2 à la valeur de bande. Ensuite, elle va diviser la valeur du nombre obtenu par 2. La boucle for va afficher un “=” tant que i est strictement inférieure à la valeur de bande et va s'incrémenter de 1 à chaque tour de la boucle. Cela va donc former une bande de “=”. La fonction va ensuite afficher un espace, puis le mot mis en argument de la fonction et un espace après le mot. Il y a ensuite, une nouvelle boucle for, identique à la première qui va donc afficher une bande de “=” après le mot. Pour finir la fonction saute une ligne dans le terminal.}
+\newpage
 \subsubsection{fonction printMenu()}
 Cette fonction ne prend aucun élément en argument, elle a pour effet de bord d'afficher le menu.
 \begin{lstlisting}
 void printMenu(){
+  //Clear du terminal
     system("clear");
+  //Affichage du fichier sokoban.txt
     afficher_ascii_art("./programme/ressources/sokoban.txt");
     printf("\n");
     printf("\n");
+  //Affichage du mot MENU entre deux bandes
     texte_encadre("MENU",80);
     printf("\t1. Jouer à la partie de test\n");
     //printf("\t2. Jouer au mode histoire\n");
@@ -247,6 +255,7 @@ Ce qui donne:
 Cette fonction prend en argument un terrain t, cette fonction affiche le terrain qu’on lui met en argument. 
 \begin{lstlisting}
 void printTerrain(terrain *t){
+  //Affichage de chaque caractère du terrain
     for (int i=0;i<t->nbLigns;i++){
         for (int j=0;j<t->nbCols;j++){
             printf("%c",t->data[i][j]);
@@ -255,6 +264,7 @@ void printTerrain(terrain *t){
     }
 }
 \end{lstlisting}
+\newpage
 \subsection{Fonction partieSokoban()}\label{partie}
 La fonction "partieSokoban()" se situe pour rappel dans le fichier "partie.c". Elle prends en argument un pointeur sur une structure "partie", ne renvoie rien et a pour effet de bord la modification des variables suivantes:
 \begin{itemize}
