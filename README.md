@@ -17,7 +17,7 @@ Sokoban est un jeu de puzzle dans lequel le joueur doit pousser des caisses sur 
 
   Le joueur doit utiliser sa stratégie et ses habiletés de résolution de problèmes pour déplacer toutes les caisses sur les cibles dans le niveau le plus efficacement possible.
 
-  Le jeu se termine lorsque toutes les caisses ont été déplacées sur les cibles.
+  Le jeu se termine lorsque toutes les caisses ont été déplacées sur les cibles ou lorsque le joueur abandonne.
 
 Dans notre versions du sokoban, nous avons utiliser les caractère suivant pour symboliser les différents éléments:
 
