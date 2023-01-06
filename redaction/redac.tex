@@ -5,11 +5,140 @@
 
 \usepackage{babel}
 
+\usepackage{xcolor}
+\usepackage{listings}
+
+\definecolor{ao(english)}{rgb}{0.0, 0.5, 0.0}
+
+\lstset{
+  basicstyle=\footnotesize,
+  extendedchars=true,
+  framexleftmargin=16pt,
+  framextopmargin=3pt,
+  framexbottommargin=6pt,
+  frame=tb,
+  commentstyle=\color{ao(english)},
+  breaklines=true,
+  keywordstyle=\color{blue},
+  language=C,
+  literate=
+  {²}{{\textsuperscript{2}}}1
+  {⁴}{{\textsuperscript{4}}}1
+  {⁶}{{\textsuperscript{6}}}1
+  {⁸}{{\textsuperscript{8}}}1
+  {€}{{\euro{}}}1
+  {é}{{\'e}}1
+  {è}{{\`{e}}}1
+  {ê}{{\^{e}}}1
+  {ë}{{\¨{e}}}1
+  {É}{{\'{E}}}1
+  {Ê}{{\^{E}}}1
+  {û}{{\^{u}}}1
+  {ù}{{\`{u}}}1
+  {â}{{\^{a}}}1
+  {à}{{\`{a}}}1
+  {á}{{\'{a}}}1
+  {ã}{{\~{a}}}1
+  {Á}{{\'{A}}}1
+  {Â}{{\^{A}}}1
+  {Ã}{{\~{A}}}1
+  {ç}{{\c{c}}}1
+  {Ç}{{\c{C}}}1
+  {õ}{{\~{o}}}1
+  {ó}{{\'{o}}}1
+  {ô}{{\^{o}}}1
+  {Õ}{{\~{O}}}1
+  {Ó}{{\'{O}}}1
+  {Ô}{{\^{O}}}1
+  {î}{{\^{i}}}1
+  {Î}{{\^{I}}}1
+  {í}{{\'{i}}}1
+  {Í}{{\~{Í}}}1,
+}
+
+
 \begin{document}
 \maketitle
 \tableofcontents
-\section{Rappel des règles du jeu}
-\section{Modélisation du plateau de jeu}
-\section{Structure du programme}
+\newpage
+\section{Du jeu en tant que concept}
+\subsection{Rappel des règles du jeu}
+Sokoban est un jeu de puzzle dans lequel le joueur doit pousser des caisses sur des cibles. Voici comment le jeu fonctionne:
+\begin{itemize}
+\item Le joueur peut se déplacer dans quatre directions: haut, bas, gauche, droite.
+\item Le joueur doit pousser les caisses sur les cibles, mais il ne peut pousser qu'une caisse à la fois et ne peut pas tirer une caisse.
+\item Les caisses ne peuvent être poussées que sur des espaces vides ou sur des cibles. Elles ne peuvent pas être poussées contre des murs ou d'autres caisses.
+\item Le joueur doit utiliser sa stratégie et ses habiletés de résolution de problèmes pour déplacer toutes les caisses sur les cibles dans le niveau le plus efficacement possible.
+\item Le jeu se termine lorsque toutes les caisses ont été déplacées sur les cibles ou lorsque le joueur abandonne.
+\end{itemize}
+
+\subsection{Modélisation du jeu}
+À partir de ces règles, nous avons du faire des choix arbitraires pour la représentation des différents concepts que prend en compte le jeu:
+\subsubsection{Terrain/Carte}
+Pour modéliser le terrain de jeu, nous avons fait le choix de l’afficher dans le terminal avec les symboles suivants : 
+\begin{itemize}
+\item Les murs sont représentés par le symbole “{\#}”.
+\item Les caisses sont représentés par la lettre “O”.
+\item Les cibles sont représentés par la lettre “x”.
+\item Les caisses se trouvant sur une cible sont représentés par le chiffre “0”.
+\item Le joueur est symbolisé par la lettre “P”.
+\end{itemize}
+\subsubsection{Contrôles du personnage}
+Pour pouvoir déplacer le personnage sur le terrain dans les quatre directions possibles, nous avons choisi les contrôles suivants :
+\begin{itemize}
+\item Déplacement vers le haut: touche h.
+\item Déplacement vers le bas: touche b.
+\item Déplacement vers la gauche: touche g.
+\item Déplacement vers la droite: touche d.
+\end{itemize}
+L'utilisateur a également la possibilité d'abandonner à tout moment la partie, il lui suffit de rentrer la lettre 'a' dans le terminal.
+\newpage
+\section{Au programme informatique}
+\subsection{Structuration des données}
+Maintenant que les éléments du jeu sont modélisés, il faut les structurer en données compréhensible pour un ordinateur. Nous allons donc utiliser la fonctionnalité "struct" du langage C afin de regrouper plusieurs éléments/variables proches sémantiquement dans un même objet.
+\subsubsection{terrain}
+Un terrain de jeu de Sokoban pour être représenté par un tableau à deux entrées. Ainsi, en C, nous inclurons dans notre structure "terrain" un pointeur de pointeurs de caractères dans le but d'allouer dynamiquement un tableau 2D plus tard dans le programme. 
+
+Afin de délimiter la taille de ce tableau, nous ajoutons également à cette structure deux entiers représentant le nombre de lignes et de colonnes que devra faire le tableau. 
+
+Cette structure possède également un dernier entier correspondant au nombre de cibles présentes sur le terrain.
+Nous avons donc:
+\begin{lstlisting}
+typedef struct terrain terrain;
+struct terrain{
+    char ** data;
+    int nbLigns;
+    int nbCols;
+    int nbCibles;
+};
+\end{lstlisting}
+\subsubsection{perso}
+Notre structure "perso" regroupe l'ensemble des variables définissant le personnage jouable sur le terrain. Ainsi, elle possède une paire d'entiers permettant de déterminer respectivement sur quelle ligne et sur quelle colonne du terrain se trouve notre personnage. 
+
+Elle possède également un troisième entier $\in \{0,1\}$(booléen) permettant de savoir si le personnage se trouve sur une cible ou non. Cet entier se justifie par le fait que notre modélisation ne comprend pas de caractère pour le cas où le personnage se trouve sur une cible (cela aurait pu être "R" par exemple). Nous avons donc:
+\begin{lstlisting}
+typedef struct perso perso;
+struct perso{
+int lign;
+int col;
+short int surCible;
+};
+\end{lstlisting}
+\subsubsection{partie}
+Enfin, nous avons fait le choix de regrouper nos deux structures définies ci-dessus dans une ultime structure "partie". Elle possède donc un pointeur vers une structure "terrain" et un autre pointeur vers une structure "perso". Ces pointeurs seront alloués à l'initialisation d'une partie.
+
+La structure "partie" possède également un pointeur de caractères qui permettra que garder en mémoire le nom de la partie. Elle possède également un entier "puntos" indiquant le nombres de cibles couvertes par une caisse. Nous avons donc:
+\begin{lstlisting}
+typedef struct partie partie;
+struct partie{
+    terrain *terrain;
+    perso *perso;
+    int puntos;
+    char *nom;
+};
+\end{lstlisting}
+\subsection{Structure du programme}
+\subsection{Fonctions d'affichage}
+\subsection{Fonction partieSokoban()}
 \section{Conclusion}
 \end{document}
