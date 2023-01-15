@@ -38,6 +38,23 @@ void initTerrainTest(terrain *t){
     t->data[2][3]='O';
     t->data[3][5]='x';
 }
+partie* initPartieCSV(const char* nom_fichier){
+    //Ouverture fichier
+    FILE * fd=fopen(nom_fichier,"r");
+    if (fd == NULL){
+        perror("Erreur lors de l'ouverture du fichier");
+        exit(-1);
+    }
+    //Allocation mémoire
+    perso * p=malloc(sizeof(perso));
+    terrain * t=malloc(sizeof(terrain));
+    partie * part=malloc(sizeof(partie));
+    part->perso = p;
+    part->terrain = t;
+
+    //Lecture fichier
+    
+}
 
 int main() {
     int conti=1;
@@ -51,7 +68,7 @@ int main() {
 
         if (strcmp(choix, "1") == 0){
             //Initialisation de Bob
-            perso * bob=malloc(sizeof(bob));
+            perso * bob=malloc(sizeof(perso));
             bob->lign=1;
             bob->col=1;
             bob->surCible=0;
@@ -72,6 +89,9 @@ int main() {
             partieTest->nom = "PARTIE TEST";
 
             partieSokoban(partieTest);
+        }
+        else if (strcmp(choix,"2") == 0){
+            printf("bonjour");
         }
         else if (strcmp(choix, "q") == 0){
             conti=0;

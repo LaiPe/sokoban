@@ -4,7 +4,7 @@
   Notre fichier principal s'appelle main.c. Afin de pouvoir le compiler pour la première fois on doit initiaiser le sous répertoire `bin`, nous écrivons la ligne suivante:  
   `mkdir ./programme/bin`  
 Ensuite, pour compiler et lancer le programme nous devons tapper le ligne:  
-`gcc programme/main.c programme/affichage.c programme/partie.c -o programme/bin/prog && ./programme/bin/prog `
+`gcc programme/main.c programme/affichage.c programme/partie.c -o programme/bin/prog && ./programme/bin/prog`
 
 ## Règles du jeu
 Sokoban est un jeu de puzzle dans lequel le joueur doit pousser des caisses sur des cibles. Voici comment le jeu fonctionne:
