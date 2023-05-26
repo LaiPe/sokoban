@@ -11,3 +11,6 @@ partie.o: partie.c affichage.h
 
 affichage.o: affichage.c struct.h
 	gcc -c affichage.c
+
+clean:
+	rm -f main.o partie.o affichage.o sokoban
