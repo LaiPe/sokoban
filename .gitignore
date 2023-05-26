@@ -1,4 +1,6 @@
-programme/bin
+programme/*.o
+programme/sokoban
+
 redaction/*.aux
 redaction/*.log
 redaction/*.gz
