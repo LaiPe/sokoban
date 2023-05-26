@@ -58,12 +58,12 @@ void printMenu(){
   //Clear du terminal
     system("clear");
   //Affichage du fichier sokoban.txt
-    afficher_ascii_art("ressources/sokoban.txt");
+    afficher_ascii_art("./programme/ressources/sokoban.txt");
     printf("\n");
     printf("\n");
   //Affichage du mot MENU entre deux bandes
     texte_encadre("MENU",80);
-    printf("\t1. Jouer à la partie de test\n");
+    printf("\t1. Jouer à la partie de test\n"); 
     //printf("\t2. Jouer au mode histoire\n");
     //printf("\t3. Jouer à une partie enregistée dans un fichier .csv\n");
     printf("\tq. Quitter\n");

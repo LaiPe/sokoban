@@ -152,10 +152,10 @@ int partieSokoban(partie *game){
     }
     //Affichage de fin
     if (game->puntos==game->terrain->nbCibles){
-        afficher_ascii_art("ressources/victoire.txt");
+        afficher_ascii_art("./programme/ressources/victoire.txt");
     }
     else{
-        afficher_ascii_art("ressources/defaite.txt");
+        afficher_ascii_art("./programme/ressources/defaite.txt");
     }
     printf("\n");
     printf("\n");
