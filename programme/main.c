@@ -1,4 +1,33 @@
+#ifndef PARTIE
+#define PARTIE
 #include "partie.h"
+#endif
+
+#ifndef AFFICHAGE
+#define AFFICHAGE
+#include "affichage.h"
+#endif
+
+#ifndef STRUCTURE
+#define STRUCTURE
+#include "struct.h"
+#endif
+
+#ifndef STDLIB
+#define STDLIB
+#include <stdlib.h>
+#endif
+
+#ifndef STDIO
+#define STDIO
+#include <stdio.h>
+#endif
+
+#ifndef STRING
+#define STRING
+#include <string.h>
+#endif
+
 
 //FONCTIONS
 void declaTerrain(terrain *t){

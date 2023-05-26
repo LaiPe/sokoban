@@ -1,4 +1,28 @@
-#include "partie.h"
+#ifndef AFFICHAGE
+#define AFFICHAGE
+#include "affichage.h"
+#endif
+
+#ifndef STRUCTURE
+#define STRUCTURE
+#include "struct.h"
+#endif
+
+#ifndef STDLIB
+#define STDLIB
+#include <stdlib.h>
+#endif
+
+#ifndef STDIO
+#define STDIO
+#include <stdio.h>
+#endif
+
+#ifndef STRING
+#define STRING
+#include <string.h>
+#endif
+
 
 //FONCTION PARTIE
 int obstacle(char a){
@@ -128,10 +152,10 @@ int partieSokoban(partie *game){
     }
     //Affichage de fin
     if (game->puntos==game->terrain->nbCibles){
-        afficher_ascii_art("./programme/ressources/victoire.txt");
+        afficher_ascii_art("ressources/victoire.txt");
     }
     else{
-        afficher_ascii_art("./programme/ressources/defaite.txt");
+        afficher_ascii_art("ressources/defaite.txt");
     }
     printf("\n");
     printf("\n");

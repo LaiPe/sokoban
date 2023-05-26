@@ -1,8 +1,24 @@
-#include "affichage.h"
+#ifndef STRUCTURE
+#define STRUCTURE
+#include "struct.h"
+#endif
+
+#ifndef STDIO
+#define STDIO
+#include <stdio.h>
+#endif
+
+#ifndef STRING
+#define STRING
+#include <string.h>
+#endif
+
+#ifndef STDLIB
+#define STDLIB
+#include <stdlib.h>
+#endif
 
 //FONCTIONS AFFICHAGE
-
-
 void afficher_ascii_art(const char *nom_fichier) {
     FILE *fp;
     int c;
@@ -42,7 +58,7 @@ void printMenu(){
   //Clear du terminal
     system("clear");
   //Affichage du fichier sokoban.txt
-    afficher_ascii_art("./programme/ressources/sokoban.txt");
+    afficher_ascii_art("ressources/sokoban.txt");
     printf("\n");
     printf("\n");
   //Affichage du mot MENU entre deux bandes
