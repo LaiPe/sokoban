@@ -1,10 +1,14 @@
 # Sokoban
+Ce dépot contient l'ensemble du code source de notre programme ainsi qu'un compte-rendu régigé en LaTeX.
 
 ## Compilation du programme
-  Notre fichier principal s'appelle main.c. Afin de pouvoir le compiler pour la première fois on doit initiaiser le sous répertoire `bin`, nous écrivons la ligne suivante:  
-  `mkdir ./programme/bin`  
-Ensuite, pour compiler et lancer le programme nous devons tapper le ligne:  
-`gcc programme/main.c programme/affichage.c programme/partie.c -o programme/bin/prog && ./programme/bin/prog `
+Dans le dossier "programme" se trouve l'entièreté du code source de jeu. Pour produire l'éxecutable à partir de ce code, nous avons mis a disposition un fichier "makefile". Vous pouvez y faire appel avec la commande suivante en vous plaçant dans le répertoire principal (sokoban/):
+
+`make -C programme/`
+
+Une fois votre programme compilé, vous pouvez l'éxecuter avec cette commande:
+
+`programme/./sokoban`
 
 ## Règles du jeu
 Sokoban est un jeu de puzzle dans lequel le joueur doit pousser des caisses sur des cibles. Voici comment le jeu fonctionne:
